@@ -3,6 +3,7 @@ import React, { FC, useState } from 'react'
 
 // packages
 import axios from 'axios'
+import _ from 'lodash'
 
 // styles
 import * as S from './TabsRightMenu.styled'
@@ -15,21 +16,14 @@ import { generateUUIDWithoutDashed, sleep } from '../../../../../../helpers/misc
 import { useDispatch, useSelector } from 'react-redux'
 
 // actions
-import { showAlert } from '../../../../../../actions/index'
 import { hidePanel, showPanel } from '../../../../../../actions/UIModals'
 import { setAlertData, setCodeExecutionMessage } from '../../../../../../actions/otherModals'
-import _, { uniqueId } from 'lodash'
 
 const TabsRightMenu: FC<TabsRightMenuProps> = ({ text, filePath }) => {
   const dispatch = useDispatch()
 
-  const codeExecutionMessage = useSelector<any>(state => state.codeExecutionMessage)
   const panelOpened = useSelector<any>(state => state.panelOpened)
   const alertData = useSelector<any, any>(state => state.alertData)
-
-
-
-
 
   const [executionSuspended, setExecutionSuspended] = useState(false)
 

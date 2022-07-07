@@ -72,75 +72,94 @@ function App() {
     // getting all the data from mongodb
     // only when loading website / refreshing
     dispatch(setSettings(Settings))
-    getUserData()
-  }, [])
 
-  const getUserData = async () => {
-    try {
-      const response = await axios({
-        method: 'get',
-        url: `${axiosURL}/getUserData`,
-      })
-      // parsing and transforming data from server
-      var template = { mode: 'normal', command: '', x: 95, y: 65 }
-      var res: IFilesData = {}
-      for (var el of response.data.data.filesData) {
-        var tokenizedText = []
-        for (var line of JSON.parse(el.text)) {
-          tokenizedText.push(tokenizer(line))
+    let isMounted = true
+    const controller = new AbortController();
+
+    const getUserData = async () => {
+      try {
+        const response = await axios({
+          method: 'get',
+          url: `${axiosURL}/getUserData`,
+          signal: controller.signal
+        })
+
+        // isMounted check
+        if (response.status === 401) {
+          console.log("Unauthorized");
+          dispatch(setDataLoaded(true))
         }
-        res[el.fileId] = {
-          ...template,
-          fileName: el.fileName,
-          text: JSON.parse(el.text),
-          fileId: el.fileId,
-          filePath: el.filePath,
-          tokenizedText: tokenizedText,
-          newFile: true
+        else {
+          // parsing and transforming data from server
+          var template = { mode: 'normal', command: '', x: 95, y: 65 }
+          var res: IFilesData = {}
+          for (var el of response.data.data.filesData) {
+            var tokenizedText = []
+            for (var line of JSON.parse(el.text)) {
+              tokenizedText.push(tokenizer(line))
+            }
+            res[el.fileId] = {
+              ...template,
+              fileName: el.fileName,
+              text: JSON.parse(el.text),
+              fileId: el.fileId,
+              filePath: el.filePath,
+              tokenizedText: tokenizedText,
+              newFile: true
+            }
+          }
+          // adding new files data from localStorage
+          var tempFilesData;
+          if (window.localStorage.getItem("newTempFilesData")) {
+            tempFilesData = JSON.parse(window.localStorage.getItem("newTempFilesData")!)
+          } else {
+            tempFilesData = {}
+          }
+
+          for (const fileId in tempFilesData) {
+            res[fileId] = tempFilesData[fileId]
+          }
+
+          // if there's only one browser on one computer -> there's no problem, if we have multiple computers - we have a probelem
+          // need to identify browser and computer to save it in mongo and is theres the same computer, try storage
+          // if it's a different browser => go with mongodb data
+
+          // parsing and transforming folderStructure data
+          var _folderStructure: Array<ISingleFileInFolderView> = []
+          for (var file of response.data.data.folderStructure) {
+            var singleFile = { ...file, collapsed: false, visible: true }
+            delete singleFile._id
+            _folderStructure.push(singleFile)
+          }
+          const { sortedFolderStructure } = sortFolderStructure(_folderStructure)
+
+          // save filesData from server to localstorage to we can update it later with every click
+          window.localStorage.setItem("filesData", JSON.stringify(res))
+
+          dispatch(setFolderStructure(sortedFolderStructure))
+          dispatch(setFilesData(res))
+          dispatch(setDataLoaded(true))
         }
-      }
-      // adding new files data from localStorage
-      var tempFilesData;
-      if (window.localStorage.getItem("newTempFilesData")) {
-        tempFilesData = JSON.parse(window.localStorage.getItem("newTempFilesData")!)
-      } else {
-        tempFilesData = {}
-      }
-
-      for (const fileId in tempFilesData) {
-        res[fileId] = tempFilesData[fileId]
-      }
 
 
-      // if there's only one browser on one computer -> there's no problem, if we have multiple computers - we have a probelem
-      // need to identify browser and computer to save it in mongo and is theres the same computer, try storage
-      // if it's a different browser => go with mongodb data
 
-      // parsing and transforming folderStructure data
-      var _folderStructure: Array<ISingleFileInFolderView> = []
-      for (var file of response.data.data.folderStructure) {
-        var singleFile = { ...file, collapsed: false, visible: true }
-        delete singleFile._id
-        _folderStructure.push(singleFile)
-      }
-      const { sortedFolderStructure } = sortFolderStructure(_folderStructure)
-
-
-      // save filesData from server to localstorage to we can update it later with every click
-      window.localStorage.setItem("filesData", JSON.stringify(res))
-
-      dispatch(setFolderStructure(sortedFolderStructure))
-      dispatch(setFilesData(res))
-      dispatch(setDataLoaded(true))
-
-
-    } catch (err: any) {
-      console.log(err);
-      if (err.request.response === 'A token is required for authentication.') {
-        dispatch(setDataLoaded(true))
+      } catch (err: any) {
+        console.log(err);
+        if (err.request.response === 'A token is required for authentication.') {
+          dispatch(setDataLoaded(true))
+        }
       }
     }
-  }
+    // getUserData()
+
+    dispatch(setDataLoaded(true))
+    return () => {
+      isMounted = false
+      controller.abort()
+    }
+  }, [])
+
+
   useEffect(() => {
     const globalKeyPress = (e: KeyboardEvent) => {
       if (!loginModal && !registerModal && !saveFileToFolderModal) {

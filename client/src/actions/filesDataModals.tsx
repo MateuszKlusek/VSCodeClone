@@ -12,3 +12,11 @@ export const setFilesData = (data: any) => {
     }
 }
 
+
+export const setAuth = (data: any) => {
+    return {
+        type: "SET_AUTH",
+        payload: data
+    }
+}
+

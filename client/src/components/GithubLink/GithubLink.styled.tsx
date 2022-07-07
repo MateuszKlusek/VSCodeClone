@@ -4,7 +4,7 @@ export const CornerStyles = styled.div`
   z-index: 2001;
   filter: brightness(1);
   position: absolute;
-  bottom: 150px;
+  bottom: 250px;
   left: 9px;
   .github-corner {
     &:hover .octo-arm {

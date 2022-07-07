@@ -1,18 +1,22 @@
 import jwt from "jsonwebtoken"
+import dotenv from "dotenv"
+dotenv.config();
 
 export const verifyToken = (req, res, next) => {
-    const token = req.body.token || req.query.token || req.headers["x-access-token"]
+    const authHeader = req.header['authorization']
 
-    if (!token) {
-        return res.status(403).send("A token is required for authentication.")
+    if (!authHeader) {
+        console.log("not authorized")
+        return res.status(401).send("A token is required for authentication.")
     }
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_TOKEN_SECRET)
-        req.user = decoded;
-    } catch (err) {
-        console.log("invalid token")
-        return res.status(401).send("Invalid token")
-    }
-    return next();
+    console.log(authHeader) // Bearer token
+    const token = authHeader.split(" ")[1]
+    jwt.verify(
+        token, process.env.ACCESS_TOKEN_SECRET,
+        (err, decoded) => {
+            if (err) return res.sendStatus(403) // invalid token
+            req.email = decoded.email
+            next()
+        }
+    )
 }

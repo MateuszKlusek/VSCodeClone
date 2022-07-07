@@ -1,10 +1,10 @@
 import styled from 'styled-components'
 
 export const RegisterModalContainer = styled.div`
-  /* user-select: none; */
+  user-select: none;
   position: absolute;
   width: 260px;
-  height: 225px;
+  height: 255px;
   border-radius: 10px;
   border: 1px solid rgb(81, 80, 86);
   box-shadow: 0px 0px 1px 1px #01010178;
@@ -57,6 +57,7 @@ export const Input = styled.input`
 `
 
 export const Button = styled.div`
+cursor: pointer;
   width: 104px;
   height: 27px;
   background: rgb(0, 119, 217);
@@ -72,4 +73,12 @@ export const Button = styled.div`
   &:active {
     background: rgb(0, 157, 235);
   }
+`
+
+
+export const ErrorField = styled.div`
+margin-top: 10px;
+   height: 27px; 
+   color: red;
+   font-size: 14px;
 `

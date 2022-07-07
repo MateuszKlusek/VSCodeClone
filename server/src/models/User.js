@@ -31,7 +31,10 @@ const User = new Schema({
         fileId: String
 
     }],
-    opened_filesId: {}
+    opened_filesId: {},
+    refreshToken: {
+        type: String,
+    }
 
 });
 

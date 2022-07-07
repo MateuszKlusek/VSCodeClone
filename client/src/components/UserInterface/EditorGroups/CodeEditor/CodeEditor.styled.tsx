@@ -129,9 +129,15 @@ export const Icon = styled.img`
 export const OptionText = styled.div`
 `
 
+export const VSCodeBigIconContainer = styled.div`
+   margin-top: 50px;
+   width: 300px; 
+   height: 300px;
+`
+
+
 export const VSCodeBigIcon = styled.img`
-  margin-top: 50px;
-  width: 300px;
+  width: 100%;
   opacity: 0.3;
 `
 

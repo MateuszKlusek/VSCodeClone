@@ -31,6 +31,8 @@ import { enableAddingFileOrFolderFromWorkspace } from '../../../../../actions/ot
 const Workspace = () => {
   const dispatch = useDispatch()
   // context states
+  const auth = useSelector<any, any>(state => state.auth)
+
   const openFiles = useSelector<any, any>(state => state.openFiles)
   const folderStructure = useSelector<any, any>(state => state.folderStructure)
   const filesData = useSelector<any, any>(state => state.filesData)
@@ -321,15 +323,19 @@ const Workspace = () => {
 
         onClick={(e) => {
           e.stopPropagation()
-          if (folderStructure.length === 0) {
+          if (folderStructure.length === 0 && auth.isAuth) {
             handleAddFirstFolder()
           }
         }}
       >
-        {folderStructure.length === 0 && <S.NoFilesInformation>
+        {folderStructure.length === 0 && auth.isAuth && <S.NoFilesInformation>
           Click here to create a new project
-
         </S.NoFilesInformation>}
+
+        {folderStructure.length === 0 && !auth.isAuth && <S.NoFilesInformation>
+          Login or register to create project
+        </S.NoFilesInformation>}
+
         {folderStructure && folderStructure.map((el: ISingleFileInFolderView, idx: any) =>
 
           el.fieldType === "input" ?

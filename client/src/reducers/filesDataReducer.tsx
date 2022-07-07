@@ -56,7 +56,7 @@ export const leftMenuActiveItem = (state: string = "explorer", action: any) => {
 }
 
 // data/folder structure
-export const folderStructure = (state: any = {}, action: any) => {
+export const folderStructure = (state: any = [], action: any) => {
     switch (action.type) {
         case "SET_FOLDER_STRUCTURE":
             return action.payload

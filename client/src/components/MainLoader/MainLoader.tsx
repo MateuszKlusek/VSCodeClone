@@ -6,7 +6,6 @@ const MainLoader = () => {
   useEffect(() => {
     const loadingTimer = setTimeout(() => {
       setLoadingMessageLoaded((prev) => true)
-      console.log('asdf')
     }, 2000)
     const loadingTimer2 = setTimeout(() => {
       window.location.reload()

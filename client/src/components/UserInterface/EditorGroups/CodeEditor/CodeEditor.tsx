@@ -492,7 +492,8 @@ const CodeEditor: FC<CodeEditorProps> = ({ editorId }) => {
             </S.FirstGroup>
 
 
-            <S.VSCodeBigIcon src={bigVscodeIcon} alt={"vscodeicon"} />
+            <S.VSCodeBigIconContainer>
+              <S.VSCodeBigIcon src={bigVscodeIcon} alt={"vscodeicon"} /></S.VSCodeBigIconContainer>
 
 
             <S.HelperIconsContainer>

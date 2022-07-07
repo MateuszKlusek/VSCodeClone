@@ -29,6 +29,8 @@ const LoginModal = () => {
   const loginModal = useSelector<any, boolean>(state => state.loginModal)
   const registerModal = useSelector<any, boolean>(state => state.registerModal)
 
+  const [errorMessage, setErrorMessage] = useState<string>("")
+
   const VSIconRef = useRef<HTMLImageElement>(null)
   // ref for click outside
   const RegisterModalContainerRef = useDetectClickOutside({
@@ -58,6 +60,7 @@ const LoginModal = () => {
 
   const FirstButtonRef = useRef<HTMLDivElement>(null)
   const SecondButtonRef = useRef<HTMLDivElement>(null)
+  const ErrorMessageRef = useRef<HTMLDivElement>(null)
   const ButtonRefFirst = useRef(false)
   useEffect(() => {
     function globalKeyPress(e: Event) {
@@ -84,8 +87,16 @@ const LoginModal = () => {
     EmailInputRef.current && EmailInputRef.current.focus()
   }, [])
 
-  // login API
+  // handle disappearing error message after some time 
+  useEffect(() => {
+    if (errorMessage) {
+      setTimeout(() => {
+        setErrorMessage(prev => "")
+      }, 1000)
+    }
+  }, [errorMessage])
 
+  // login API
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const registerAccount = async () => {
@@ -93,18 +104,22 @@ const LoginModal = () => {
       const response = await axios({
         method: 'post',
         url: `${axiosURL}/loginUser`,
-        data: { email: email, password: password },
+        data: { email, password },
       })
 
-      dispatch(showAlert([true, 'Loggin in']))
+      setErrorMessage("User logged")
+      console.log(response.data);
     } catch (err) {
-      if (err.response.status === 409) dispatch(showAlert([true, 'Email is taken']))
-
-      if (err.response.status === 401) dispatch(showAlert([true, 'Invalid email or password']))
-
-      //  setAlertShown((prev) => [true, 'different error'])
+      if (err.response.status === 401) {
+        setErrorMessage("No such user")
+      } else if (err.response.status === 400) {
+        setErrorMessage("All input fields are required")
+      } else {
+        setErrorMessage("Error")
+      }
     }
   }
+
 
   return (
     <S.RegisterModalContainer ref={RegisterModalContainerRef}>
@@ -127,11 +142,13 @@ const LoginModal = () => {
         onClick={() => {
           registerAccount()
         }}
+        ref={FirstButtonRef}
       >
         Log in
       </S.Button>
-      <S.Button ref={FirstButtonRef}>Log in</S.Button>
-      <S.Button ref={SecondButtonRef}>Register</S.Button>
+      <S.ErrorField ref={ErrorMessageRef}>
+        {errorMessage}
+      </S.ErrorField>
     </S.RegisterModalContainer>
   )
 }

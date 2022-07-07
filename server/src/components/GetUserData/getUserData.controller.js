@@ -11,14 +11,11 @@ export const getUserData = async (req, res) => {
         res.send({
             status: "success", data: {
                 filesData: filesId_response, folderStructure: user_data_response.folderStructure
-
             }
         })
     }
     catch (err) {
         res.send({ status: "failure" })
         console.log(err)
-
     }
-
 }

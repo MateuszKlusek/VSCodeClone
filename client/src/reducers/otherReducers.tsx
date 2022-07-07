@@ -48,3 +48,15 @@ export const globalSearchPhrase = (state: string = "", action: any) => {
             return state
     }
 }
+
+
+
+// for authentication
+export const auth = (state: any = { isAuth: false, accessToken: "", email: "" }, action: any) => {
+    switch (action.type) {
+        case "SET_AUTH":
+            return state = action.payload
+        default:
+            return state
+    }
+}

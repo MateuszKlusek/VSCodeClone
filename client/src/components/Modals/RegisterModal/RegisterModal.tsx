@@ -6,17 +6,16 @@ import { useDetectClickOutside } from 'react-detect-click-outside'
 import { useDispatch, useSelector } from 'react-redux'
 
 // packages
-import axios from 'axios'
 import gsap from 'gsap'
+
+// api
+import axios from "./../../../api/axios"
 
 // styles
 import * as S from './RegisterModal.styled'
 
 // assets
 import VSIcon from './../../../assets/others/visual-studio-code.png'
-
-// helpers
-import { axiosURL } from '../../../config/axios.js'
 
 // actions
 import { hideRegisterModal, showAlert } from '../../../actions/popupsModals'
@@ -25,6 +24,8 @@ const RegisterModal = () => {
 
   const loginModal = useSelector<any, boolean>(state => state.loginModal)
   const registerModal = useSelector<any, boolean>(state => state.registerModal)
+
+  const [errorMessage, setErrorMessage] = useState<string>("")
 
   const dispatch = useDispatch()
   // refs
@@ -74,39 +75,57 @@ const RegisterModal = () => {
       }
     } else {
       ButtonRefFirst.current = true
-      console.log('x')
     }
   }, [registerModal])
 
   const EmailInputRef = useRef<HTMLInputElement>(null)
   const PasswordInputRef = useRef<HTMLInputElement>(null)
+  const ErrorMessageRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     EmailInputRef.current && EmailInputRef.current.focus()
   }, [])
 
-  // register API
 
+
+  // handle disappearing error message after some time 
+  useEffect(() => {
+    if (errorMessage) {
+      setTimeout(() => {
+        setErrorMessage(prev => "")
+      }, 1000)
+    }
+  }, [errorMessage])
+
+
+  // register API
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const registerAccount = async () => {
     try {
       const response = await axios({
         method: 'post',
-        url: `${axiosURL}/registerUser`,
-        data: { email: email, password: password },
+        url: `/registerUser`,
+        data: {
+          email,
+          password
+        },
       })
 
-      dispatch(showAlert([true, 'Account created']))
+      setErrorMessage("Account created")
+      console.log(response.data);
     } catch (err) {
       if (err.response.status === 409) {
-        dispatch(showAlert([true, 'Email is taken']))
+        setErrorMessage("Email is taken")
       } else if (err.response.status === 400) {
-        dispatch(showAlert([true, 'All input fields are required']))
+        setErrorMessage("All input fields are required")
       } else {
-        dispatch(showAlert([true, 'different error']))
+        setErrorMessage("Error")
       }
     }
   }
+
+
+
 
   return (
     <S.RegisterModalContainer ref={RegisterModalContainerRef}>
@@ -132,8 +151,9 @@ const RegisterModal = () => {
       >
         Register
       </S.Button>
-      {/* <S.Button ref={FirstButtonRef}>Log in</S.Button>
-        <S.Button ref={SecondButtonRef}>Register</S.Button> */}
+      <S.ErrorField ref={ErrorMessageRef}>
+        {errorMessage}
+      </S.ErrorField>
     </S.RegisterModalContainer>
   )
 }

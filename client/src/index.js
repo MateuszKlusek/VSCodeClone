@@ -9,6 +9,9 @@ import { createStore } from "redux"
 // components
 import App from './App'
 
+// context
+import { AuthProvider } from './context/AuthProvider'
+
 // reducer of reducers (ROOT)
 import { rootReducer } from './reducers'
 
@@ -20,6 +23,8 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <Provider store={store}>
-    <App />
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   </Provider>
 );
