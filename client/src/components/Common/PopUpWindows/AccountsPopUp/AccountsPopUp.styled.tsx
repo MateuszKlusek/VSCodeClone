@@ -31,7 +31,7 @@ interface ISingleItem {
 }
 
 export const SingleItem = styled.div<ISingleItem>`
-  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'cursor')};
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   display: flex;
   align-items: center;
   height: 17px;

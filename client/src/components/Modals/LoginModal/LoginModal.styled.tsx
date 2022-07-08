@@ -43,7 +43,7 @@ export const Text = styled.div`
 
 export const Input = styled.input`
   outline: none;
-  width: 180px;
+  width: 200px;
   height: 25px;
   background: #2e303d;
   margin-bottom: 5px;

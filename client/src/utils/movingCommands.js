@@ -1,5 +1,4 @@
 import { normalizePixelToIndex, normalizeIndexToPixel } from "./Misc/normalizeData"
-import { axiosURL } from "../config/axios.js";
 import axios from "axios"
 
 // MOVEMENTS WITH A STABLE MODE
@@ -71,7 +70,6 @@ export async function cmd_dotsW() {
             return { newX: x, newY: y, newMode: "command", newText: text, changeText: false, alertText: "", misc: "newFile" }
         }
     } catch (err) {
-        console.log(err)
     }
 
 
@@ -91,19 +89,6 @@ export async function cmd_dotsW() {
     // double stringify text
     var stringified_object = (JSON.stringify(text_before_stringification))
 
-    try {
-        const response = await axios({
-            method: 'post',
-            url: `${axiosURL}/saveSingleFile`,
-            data: {
-                fileId,
-                stringified_object
-            }
-        })
-        return { newX: x, newY: y, newMode: "command", newText: text, changeText: false, alertText: "File saved." }
-    }
-    catch (err) {
-        console.log(err)
-    }
+    return { newX: x, newY: y, newMode: "command", newText: text, changeText: false, alertText: "File saved.", misc: "saveFileContent", stringified_object: stringified_object }
 
 }

@@ -6,7 +6,7 @@ import * as S from './Line.styled'
 // components
 import Cursor from '../Cursor/Cursor'
 
-const Line: FC<LineProps> = ({ x, y, key, idx, mode, children }) => {
+const Line: FC<LineProps> = ({ x, y, idx, mode, children }) => {
   return (
     <>
       <S.Line

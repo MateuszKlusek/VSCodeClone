@@ -172,7 +172,6 @@ const CommandPalette = () => {
       }
       if (e.key === "Enter") {
         var fD = filteredFiles[highlightedIndex]
-        console.log(filteredFiles);
         handleClick({ fileName: fD.fileName, fileId: fD.fileId })
       }
     }

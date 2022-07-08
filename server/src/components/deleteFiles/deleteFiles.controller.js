@@ -3,10 +3,10 @@ import File from "../../models/File.js"
 
 export const deleteFiles = async (req, res) => {
     try {
-        const { folderStructure, deletedFilesIds } = req.body
+        const { folderStructure, deletedFilesIds, email } = req.body
 
         // update user data
-        const userResponse = await User.findOneAndUpdate({ username: "mateuszklusek" }, { folderStructure: folderStructure, $pull: { filesId: { $in: deletedFilesIds } } })
+        const userResponse = await User.findOneAndUpdate({ email: email }, { folderStructure: folderStructure, $pull: { filesId: { $in: deletedFilesIds } } })
         // delete all files based on passed ids (one files or more) 
         const fileResponse = await File.deleteMany({ fileId: { $in: deletedFilesIds } })
 

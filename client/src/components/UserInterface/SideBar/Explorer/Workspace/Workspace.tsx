@@ -4,7 +4,6 @@ import React, { useState, useContext, useEffect, useLayoutEffect, useRef } from 
 
 // packages
 import _ from 'lodash'
-import axios from 'axios'
 
 // styles
 import * as S from './Workspace.styled'
@@ -24,10 +23,10 @@ import { generateUUIDWithoutDashed, insert } from '../../../../../helpers/misc'
 // actions
 import { setFolderStructure, setOpenFiles } from '../../../../../actions/index'
 import { disableAddingFileOrFolderFromWorkspace } from '../../../../../actions/otherModals'
-import { axiosURL } from '../../../../../config/axios'
 import { sortFolderStructure } from '../../../../../utils/Misc/misc'
 import { setFilesData } from '../../../../../actions/filesDataModals'
 import { enableAddingFileOrFolderFromWorkspace } from '../../../../../actions/otherModals'
+import useAxiosPrivate from '../../../../../hooks/useAxiosPrivate'
 
 const Workspace = () => {
   const dispatch = useDispatch()
@@ -40,6 +39,7 @@ const Workspace = () => {
   const filesData = useSelector<any, any>(state => state.filesData)
   const focusedEditor = useSelector<any, number>(state => state.focusedEditor)
   const addingFileOrFolderFromWorkspace = useSelector<any>(state => state.addingFileOrFolderFromWorkspace)
+  const dataLoaded = useSelector<any>(state => state.dataLoaded)
   // states
   const [workspaceOpened, setWorkspaceOpened] = useState(true)
 
@@ -51,7 +51,7 @@ const Workspace = () => {
   const [newFileOrFolderName, setNewFileOrFolderName] = useState<string>('')
 
 
-
+  const axiosPrivate = useAxiosPrivate();
 
   // set focus to input field when it appeares
   useEffect(() => {
@@ -89,8 +89,6 @@ const Workspace = () => {
       window.removeEventListener("keydown", handleEnter)
     }
   }, [addingFileOrFolderFromWorkspace])
-
-
 
 
 
@@ -169,10 +167,11 @@ const Workspace = () => {
 
           const saveNewFile = async () => {
             // save to server
-            const response = await axios({
+            const response = await axiosPrivate({
               method: 'post',
-              url: `${axiosURL}/saveNewFile`,
+              url: `/saveNewFile`,
               data: {
+                email: auth.email,
                 folderStructure: sortedFolderStructure,
                 singleFileInFilesInServer: singleFileInFilesInServer
               }
@@ -330,15 +329,15 @@ const Workspace = () => {
           }
         }}
       >
-        {folderStructure.length === 0 && auth.isAuth && <S.NoFilesInformation>
+        {dataLoaded && folderStructure.length === 0 && auth.isAuth && <S.NoFilesInformation>
           Click here to create a new project
         </S.NoFilesInformation>}
 
-        {!auth.isAuth && <S.NoFilesInformation>
+        {dataLoaded && !auth.isAuth && <S.NoFilesInformation>
           Login / register to create project
         </S.NoFilesInformation>}
 
-        {auth.isAuth && folderStructure && folderStructure.map((el: ISingleFileInFolderView, idx: any) =>
+        {dataLoaded && auth.isAuth && folderStructure && folderStructure.map((el: ISingleFileInFolderView, idx: any) =>
           el.fieldType === "input" ?
             <S.S
               paddingLeft={el.depth}

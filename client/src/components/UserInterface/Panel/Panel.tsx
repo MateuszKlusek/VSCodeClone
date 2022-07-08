@@ -10,6 +10,7 @@ import * as S from './Panel.styled'
 // hooks
 import { useSelector } from 'react-redux'
 import { useWindowSize } from '../../../hooks/useWindowSize'
+import useAuth from '../../../hooks/useAuth'
 
 const Panel: FC = () => {
   const codeExecutionMessage = useSelector<any, any>(state => state.codeExecutionMessage)
@@ -20,6 +21,8 @@ const Panel: FC = () => {
   const [parsedTerminalMessage, setParsedTerminalMessage] = useState<any>([])
 
   const windowSize = useWindowSize()
+  //@ts-ignore
+  const { auth, setAuth } = useAuth();
 
   useEffect(() => {
     if (codeExecutionMessage.length !== 0) {
@@ -69,7 +72,7 @@ const Panel: FC = () => {
         <S.Tab active={true}>Terminal</S.Tab>
       </S.TopMenu>
       <S.TextField>
-        <S.TerminalPlaceholder>mateuszklusek@accountnamer %</S.TerminalPlaceholder>
+        <S.TerminalPlaceholder>{auth.email}@remote %</S.TerminalPlaceholder>
         {parsedTerminalMessage.map((el: any, idx: any) => (
           <S.TextLine key={idx}>{el}</S.TextLine>
         ))}

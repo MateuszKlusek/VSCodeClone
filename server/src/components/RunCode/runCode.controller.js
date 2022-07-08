@@ -61,7 +61,7 @@ export const runCode = async (req, res) => {
             });
     }
     catch (err) {
-        console.log("sindie last err")
+        console.log('err:', err)
         tmpObj.removeCallback()
         res.send({ status: 'error', message: err })
     }

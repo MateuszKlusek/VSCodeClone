@@ -10,10 +10,11 @@ import { setFolderStructure, setOpenFiles } from "../../../actions";
 
 // action
 import { hideSaveFileToFolderModal } from "../../../actions/popupsModals";
-import { axiosURL } from "../../../config/axios";
 import { removeTab } from "../../../helpers/data";
 import { filterFileIcon } from "../../../helpers/icons";
 import { saveOpenFilesToStorage } from "../../../helpers/storage";
+import useAuth from "../../../hooks/useAuth";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import { insert, sortFolderStructure } from "../../../utils/Misc/misc";
 
 // styles
@@ -23,7 +24,8 @@ const SaveFileToFolderModal = () => {
     const dispatch = useDispatch()
 
     const [inputFileName, setInputFileName] = useState<string>("")
-
+    // @ts-ignore
+    const { auth, setAuth } = useAuth()
 
 
 
@@ -32,7 +34,7 @@ const SaveFileToFolderModal = () => {
     const openFiles = useSelector<any, any>(state => state.openFiles)
     const focusedEditor = useSelector<any, any>(state => state.focusedEditor)
 
-
+    const axiosPrivate = useAxiosPrivate();
 
 
 
@@ -123,10 +125,11 @@ const SaveFileToFolderModal = () => {
             //////////////////////////////////////////////
             // save new file to server axios
             try {
-                const response = await axios({
+                const response = await axiosPrivate({
                     method: 'post',
-                    url: `${axiosURL}/saveNewFile`,
+                    url: `/saveNewFile`,
                     data: {
+                        email: auth.email,
                         singleFileInFilesInServer,
                         folderStructure: sortedFolderStructure,
                     }

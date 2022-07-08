@@ -59,18 +59,9 @@ function App() {
 
   const sidePanelMovedPx = useSelector<any, any>(state => state.sidePanelMovedPx)
 
+  /// cleaning storage with reload
   useLayoutEffect(() => {
-    window.localStorage.getItem('openFiles') &&
-      dispatch(setOpenFiles(JSON.parse(window.localStorage.getItem('openFiles')!)))
-
-    window.localStorage.getItem('sidePanelMovedPx') &&
-      dispatch(setSidePanelMovePx(JSON.parse(window.localStorage.getItem('sidePanelMovedPx')!)))
-
-    window.localStorage.getItem('globalSearchPhrase') &&
-      dispatch((setGlobalSearchPhrase(window.localStorage.getItem('globalSearchPhrase')!)))
-
-    window.localStorage.getItem('activityBarItem') &&
-      dispatch((setLeftMenuActiveItem(window.localStorage.getItem('activityBarItem')!)))
+    // window.localStorage.clear();
   }, [])
 
 
@@ -86,24 +77,17 @@ function App() {
     !auth.accessToken && verifyRefreshToken()
   }, [])
 
-
-
   useEffect(() => {
     // getting all the data from mongodb
     // only when loading website / refreshing
     dispatch(setSettings(Settings))
 
-
     // clean localstorage when not singed-in
-    if (!auth.isAuth) localStorage.clear();
+    // if (!auth.isAuth) localStorage.clear();
 
     let isMounted = true
     const controller = new AbortController();
-
-
     const getUserData = async () => {
-      console.log("getuserData client");
-      console.log('auth', auth.email);
       try {
         const response = await axiosPrivate({
           method: 'post',
@@ -117,10 +101,8 @@ function App() {
         // isMounted check
         if (response.status === 401) {
           console.log("Unauthorized");
-          dispatch(setDataLoaded(true))
         }
         else {
-          console.log(response.data);
           // parsing and transforming data from server
           var template = { mode: 'normal', command: '', x: 95, y: 65 }
           var res: IFilesData = {}
@@ -169,21 +151,33 @@ function App() {
 
           dispatch(setFolderStructure(sortedFolderStructure))
           dispatch(setFilesData(res))
-          dispatch(setDataLoaded(true))
         }
-
-
-
       } catch (err: any) {
         console.log(err.message);
         if (err.request.response === 'A token is required for authentication.') {
-          dispatch(setDataLoaded(true))
         }
       }
-    }
-    auth.isAuth && getUserData()
+      finally {
+        if (auth.isAuth) {
+          window.localStorage.getItem('openFiles') &&
+            dispatch(setOpenFiles(JSON.parse(window.localStorage.getItem('openFiles')!)))
 
-    dispatch(setDataLoaded(true))
+          window.localStorage.getItem('sidePanelMovedPx') &&
+            dispatch(setSidePanelMovePx(JSON.parse(window.localStorage.getItem('sidePanelMovedPx')!)))
+
+          window.localStorage.getItem('globalSearchPhrase') &&
+            dispatch((setGlobalSearchPhrase(window.localStorage.getItem('globalSearchPhrase')!)))
+
+          window.localStorage.getItem('activityBarItem') &&
+            dispatch((setLeftMenuActiveItem(window.localStorage.getItem('activityBarItem')!)))
+        }
+        dispatch(setDataLoaded(true))
+      }
+    }
+
+    auth.isAuth && getUserData()
+    !auth.accessToken && dispatch(setDataLoaded(true))
+
     return () => {
       isMounted = false
       controller.abort()

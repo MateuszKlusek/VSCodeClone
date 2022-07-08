@@ -5,13 +5,11 @@ import File from "../../models/File.js"
 export const getUserData = async (req, res) => {
     // get both from user and files (based on userID from user)
     const { email } = req.body
-    console.log("getUserData", email)
     try {
         const userFound = await User.findOne({ email: email })
 
         // there's not user
         if (!userFound) return res.status(400)
-        console.log("found users with data ")
 
         const filesId = userFound.filesId
         const filesId_response = await File.find({ fileId: { $in: filesId } })

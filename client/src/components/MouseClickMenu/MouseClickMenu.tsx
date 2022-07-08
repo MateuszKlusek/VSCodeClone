@@ -19,11 +19,12 @@ import { hideRightClickMouseMenu } from '../../actions/UIModals';
 import { removeTab } from '../../helpers/data';
 import { generateUUIDWithoutDashed } from '../../helpers/misc';
 import { saveOpenFilesToStorage } from '../../helpers/storage';
-import { axiosURL } from '../../config/axios';
 
 // style
 import * as S from "./MouseClickMenu.styled"
 import { insert } from '../../utils/Misc/misc';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import useAuth from '../../hooks/useAuth';
 
 const MouseClickMenu: FC<MouseClickMenuProps> = ({ top, left, data }) => {
 
@@ -35,6 +36,7 @@ const MouseClickMenu: FC<MouseClickMenuProps> = ({ top, left, data }) => {
     const alertData = useSelector<any, any>(state => state.alertData)
     const filesData = useSelector<any, any>(state => state.filesData)
 
+    const axiosPrivate = useAxiosPrivate();
 
     const RegisterModalContainerRef = useDetectClickOutside({
         onTriggered: () => {
@@ -46,7 +48,8 @@ const MouseClickMenu: FC<MouseClickMenuProps> = ({ top, left, data }) => {
     // delete from filesData
     // delete from localStorage
 
-
+    // @ts-ignore
+    const { auth, setAuth } = useAuth()
 
     //SEPARATOR
     const handleDelete = async (singleFileInFolderView: ISingleFileInFolderView) => {
@@ -79,10 +82,11 @@ const MouseClickMenu: FC<MouseClickMenuProps> = ({ top, left, data }) => {
 
         // send data to server
         try {
-            const response = await axios({
+            const response = await axiosPrivate({
                 method: 'post',
-                url: `${axiosURL}/deleteFiles`,
+                url: `/deleteFiles`,
                 data: {
+                    email: auth.email,
                     folderStructure: newFolderStructure,
                     deletedFilesIds: deletedFilesIds
                 },

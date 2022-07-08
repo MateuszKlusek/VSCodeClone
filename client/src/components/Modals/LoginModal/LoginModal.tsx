@@ -18,9 +18,6 @@ import * as S from './LoginModal.styled'
 // assets
 import VSIcon from './../../../assets/others/visual-studio-code.png'
 
-// helpers
-import { axiosURL } from '../../../config/axios.js'
-
 // actions
 import { hideLoginModal, hideRegisterModal, showAlert } from '../../../actions/popupsModals'
 

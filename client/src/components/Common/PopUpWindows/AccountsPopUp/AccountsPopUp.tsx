@@ -49,6 +49,7 @@ const AccountsPopUp: FC<AccountsPopUpProps> = ({ bottom, left }) => {
     finally {
       window.localStorage.clear()
       setAuth({ isAuth: false, accessToken: "", email: "" });
+      dispatch(hideAccountPopupMenu())
     }
   }
 
@@ -76,11 +77,12 @@ const AccountsPopUp: FC<AccountsPopUpProps> = ({ bottom, left }) => {
       <S.Separator />
 
       {auth.isAuth ? (
-        <S.SingleItem disabled={false}>
+        <S.SingleItem disabled={false}
+          onClick={() => {
+            handleLogOut()
+          }}>
           <S.Text
-            onClick={() => {
-              handleLogOut()
-            }}
+
           >Log out</S.Text>
         </S.SingleItem>
       ) : (

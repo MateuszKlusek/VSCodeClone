@@ -9,8 +9,7 @@ import _ from 'lodash'
 import * as S from './TabsRightMenu.styled'
 
 // helpers
-import { axiosURL } from '../../../../../../config/axios.js'
-import { generateUUIDWithoutDashed, sleep } from '../../../../../../helpers/misc'
+import { generateUUIDWithoutDashed } from '../../../../../../helpers/misc'
 
 // hooks
 import { useDispatch, useSelector } from 'react-redux'
@@ -18,14 +17,20 @@ import { useDispatch, useSelector } from 'react-redux'
 // actions
 import { hidePanel, showPanel } from '../../../../../../actions/UIModals'
 import { setAlertData, setCodeExecutionMessage } from '../../../../../../actions/otherModals'
+import useAxiosPrivate from '../../../../../../hooks/useAxiosPrivate'
+import useAuth from '../../../../../../hooks/useAuth'
 
 const TabsRightMenu: FC<TabsRightMenuProps> = ({ text, filePath }) => {
   const dispatch = useDispatch()
 
   const panelOpened = useSelector<any>(state => state.panelOpened)
   const alertData = useSelector<any, any>(state => state.alertData)
-
+  const axiosPrivate = useAxiosPrivate();
   const [executionSuspended, setExecutionSuspended] = useState(false)
+
+
+  //@ts-ignore
+  const { auth, setAuth } = useAuth()
 
   const runningFile = async () => {
     setExecutionSuspended((prev) => true)
@@ -54,13 +59,15 @@ const TabsRightMenu: FC<TabsRightMenuProps> = ({ text, filePath }) => {
       // sending code to backend
 
       try {
-        const response = await axios({
+        const response = await axiosPrivate({
           method: 'post',
-          url: `${axiosURL}/runCode`,
+          url: `/runCode`,
           data: {
+            email: auth.email,
             codeToRun: codeToSend,
           },
         })
+
         dispatch(setCodeExecutionMessage(response.data.message))
         dispatch(showPanel())
         setExecutionSuspended((prev) => false)

@@ -16,7 +16,10 @@ export const Line = styled.div`
   display: flex;
 `
 
-export const Span = styled.span`
+interface ISpan {
+  color: string
+}
+export const Span = styled.span<ISpan>`
   /* without it multiple whitespaces next to each other 'collape' into one */
   white-space: pre-wrap;
   color: ${(props) => props.color};

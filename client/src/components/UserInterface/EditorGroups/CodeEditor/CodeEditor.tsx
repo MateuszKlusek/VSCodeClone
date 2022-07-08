@@ -6,6 +6,8 @@ import * as S from './CodeEditor.styled'
 // hooks
 import { useWindowSize } from '../../../../hooks/useWindowSize'
 import { useSelector, useDispatch } from 'react-redux'
+import useAxiosPrivate from '../../../../hooks/useAxiosPrivate'
+import useAuth from '../../../../hooks/useAuth'
 
 // components
 import Line from './Line/Line'
@@ -44,6 +46,9 @@ const CodeEditor: FC<CodeEditorProps> = ({ editorId }) => {
   // I know, props drilling
 
   const dispatch = useDispatch()
+  const axiosPrivate = useAxiosPrivate();
+  //@ts-ignore
+  const { auth } = useAuth()
 
   const openFiles = useSelector<any, any>(state => state.openFiles)
   const panelOpened = useSelector<any>(state => state.panelOpened)
@@ -266,7 +271,7 @@ const CodeEditor: FC<CodeEditorProps> = ({ editorId }) => {
             if (command.match(re)) {
 
               try {
-                const { newX, newY, newMode, newText, changeText, alertText, misc } = await commands[
+                const { newX, newY, newMode, newText, changeText, alertText, misc, stringified_object } = await commands[
                   cmd
                 ].call({
                   command,
@@ -278,7 +283,32 @@ const CodeEditor: FC<CodeEditorProps> = ({ editorId }) => {
                 // handling saving new file
                 if (misc === "newFile") {
                   dispatch(showSaveFileToFolderModal())
-                } else {
+                } else if (misc === "saveFileContent") {
+                  try {
+                    const response = await axiosPrivate({
+                      method: 'post',
+                      url: `/saveSingleFile`,
+                      data: {
+                        email: auth.email,
+                        fileId,
+                        stringified_object
+                      }
+                    })
+                    //@ts-ignore
+                    if (response.status === 200) {
+                      var _alertData: any = alertData
+                      var newId = generateUUIDWithoutDashed()
+                      _alertData[newId] = { msg: alertText, id: newId }
+                      _alertData = _.cloneDeep(_alertData)
+                      dispatch(setAlertData(_alertData))
+                    }
+                    setCommand((prev) => '')
+                    setMode('normal')
+                  } catch (err) {
+                    console.log(err);
+                  }
+                }
+                else {
                   // update filesData
                   const { updatedFilesDataState } = await updateFilesDataState(filesData, fileId, { x: newX, y: newY, tokenizedText: newText, mode: "normal", command: "" })
                   dispatch(setFilesData(updatedFilesDataState))
@@ -382,7 +412,7 @@ const CodeEditor: FC<CodeEditorProps> = ({ editorId }) => {
   return (
     <>
       <S.CodeEditorContainer maxHeight={1000}>
-        {openFiles.editors.length !== 0 && (
+        {auth.isAuth && openFiles.editors.length !== 0 && (
           <>
             <Tabs editorId={editorId} />
             <Breadcrumbs
@@ -409,7 +439,7 @@ const CodeEditor: FC<CodeEditorProps> = ({ editorId }) => {
                     {el.map((el2: any, idx2: any) => (
                       <S.Span
                         key={idx2}
-                        //@ts-ignore
+                        // @ts-ignore
                         color={fileExtension === "js" ? (el2.type in classes ? classes[el2.type] : '') : "white"}
                         onClick={() => {
                           // console.log(normalizeString(el2))
@@ -441,7 +471,7 @@ const CodeEditor: FC<CodeEditorProps> = ({ editorId }) => {
 
 
 
-        {openFiles.editors.length === 0 &&
+        {(openFiles.editors.length === 0 || !auth.isAuth) &&
           <S.NoFilesContainer
             width={windowSize.width - sidePanelMovedPx.curr - 255}
           >

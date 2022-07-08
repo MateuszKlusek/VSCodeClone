@@ -12,6 +12,7 @@ import { filterFileIcon } from '../../../../../helpers/icons.js'
 
 // hooks
 import { useDispatch, useSelector } from 'react-redux'
+import useAuth from '../../../../../hooks/useAuth'
 
 // actions
 import { setOpenFiles } from '../../../../../actions'
@@ -25,6 +26,8 @@ const OpenEditors = () => {
   const openFiles = useSelector<any, any>(state => state.openFiles)
   const focusedEditor = useSelector<any, number>(state => state.focusedEditor)
 
+  //@ts-ignore
+  const { auth, setAuth } = useAuth();
 
   // states
   const [openEditorsOpened, setOpenEditorsOpened] = useState(true)
@@ -74,7 +77,7 @@ const OpenEditors = () => {
         Open Editors
       </S.TitleSeparator>
       <S.A display={openEditorsOpened ? 'auto' : 'none'}>
-        {openFiles.editors.length !== 0 && openFiles.editors[focusedEditor].data.map((el: any, idx: any) => (
+        {auth.isAuth && openFiles.editors.length !== 0 && openFiles.editors[focusedEditor].data.map((el: any, idx: any) => (
           <S.SingleFile
             key={idx}
             backgroundColor={highlightFileFromTabs(el)}
