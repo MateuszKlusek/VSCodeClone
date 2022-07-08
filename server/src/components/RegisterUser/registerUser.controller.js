@@ -19,7 +19,7 @@ export const registerUser = async (req, res) => {
 
         // validate user input, all input fields required (double check)
         if (!(email && password)) {
-            return res.status(400).send({ message: "All inputs are required" })
+            return res.status(400).send({ message: "All input fields are required" })
         }
 
         // check database 
@@ -33,6 +33,8 @@ export const registerUser = async (req, res) => {
         const encryptedPassword = await bcrypt.hash(password, 10);
 
         // create user
+        // save refresh token with login 
+        // maybe change into register to, if refactor later to login with register action
         var user = await new User({
             email: email.toLowerCase(),
             password_hash: encryptedPassword,
@@ -44,7 +46,7 @@ export const registerUser = async (req, res) => {
         }).save()
 
         // need to change to object because mongo returns mongo object and we can't attach token to it
-        res.status(201).send({ success: `New user ${user} was created!` });
+        res.status(201).send({ success: `New user '${user.email}' was created!` });
     }
     catch (err) {
         res.status(500).send({ message: err.message })

@@ -3,20 +3,17 @@ import dotenv from "dotenv"
 dotenv.config();
 
 export const verifyToken = (req, res, next) => {
-    const authHeader = req.header['authorization']
+    const authHeader = req.headers.authorization || req.headers.Authorization;
 
-    if (!authHeader) {
-        console.log("not authorized")
-        return res.status(401).send("A token is required for authentication.")
-    }
-    console.log(authHeader) // Bearer token
-    const token = authHeader.split(" ")[1]
+    if (!authHeader?.startsWith('Bearer ')) return res.sendStatus(401);
+    const token = authHeader.split(' ')[1];
     jwt.verify(
-        token, process.env.ACCESS_TOKEN_SECRET,
+        token,
+        process.env.ACCESS_TOKEN_SECRET,
         (err, decoded) => {
-            if (err) return res.sendStatus(403) // invalid token
-            req.email = decoded.email
-            next()
+            if (err) return res.sendStatus(403); // invalid token (forbidden)
+            req.email = decoded.email;
+            next();
         }
-    )
+    );
 }

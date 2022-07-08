@@ -5,7 +5,7 @@ import { combineReducers } from "redux"
 import { settings } from "./settingsReducer"
 import { signInModal, loginModal, registerModal, saveFileToFolderModal } from "./popupsReducer"
 import { dataLoaded, filesData, focusedEditor, folderStructure, leftMenuActiveItem, openFiles, workspaces } from "./filesDataReducer"
-import { codeExecutionMessage, alertData, addingFileOrFolderFromWorkspace, searching, globalSearchPhrase, auth } from "./otherReducers"
+import { codeExecutionMessage, alertData, addingFileOrFolderFromWorkspace, searching, globalSearchPhrase } from "./otherReducers"
 import { sideBarOpened, commandPaletteOpened, sidePanelMovedPx, panelOpened, accountPopupMenuOpen, moveblePanelClicked, rightClickMouseMenuOpened, rightClickMouseMenuCoords } from "./UIReducer"
 import { logged } from "./userDataReducer"
 
@@ -16,7 +16,7 @@ export const rootReducer = combineReducers({
 
     dataLoaded, filesData, focusedEditor, folderStructure, leftMenuActiveItem, openFiles, workspaces,
 
-    codeExecutionMessage, alertData, addingFileOrFolderFromWorkspace, searching, globalSearchPhrase, auth,
+    codeExecutionMessage, alertData, addingFileOrFolderFromWorkspace, searching, globalSearchPhrase,
 
     sideBarOpened, commandPaletteOpened, sidePanelMovedPx, panelOpened, accountPopupMenuOpen, moveblePanelClicked, rightClickMouseMenuOpened, rightClickMouseMenuCoords,
 

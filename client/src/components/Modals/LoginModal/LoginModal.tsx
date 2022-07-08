@@ -4,10 +4,13 @@ import React, { useState, useEffect, useRef, useContext } from 'react'
 // hooks
 import { useDetectClickOutside } from 'react-detect-click-outside'
 import { useDispatch, useSelector } from 'react-redux'
+import useAuth from '../../../hooks/useAuth'
 
 // packages
-import axios from 'axios'
 import gsap from 'gsap'
+
+// api
+import axios, { axiosPrivate } from "./../../../api/axios"
 
 // styles
 import * as S from './LoginModal.styled'
@@ -25,6 +28,8 @@ const LoginModal = () => {
 
 
   const dispatch = useDispatch()
+  //@ts-ignore
+  const { auth, setAuth } = useAuth();
 
   const loginModal = useSelector<any, boolean>(state => state.loginModal)
   const registerModal = useSelector<any, boolean>(state => state.registerModal)
@@ -77,7 +82,6 @@ const LoginModal = () => {
       }
     } else {
       ButtonRefFirst.current = true
-      console.log('x')
     }
   }, [registerModal])
 
@@ -101,22 +105,29 @@ const LoginModal = () => {
   const [password, setPassword] = useState('')
   const registerAccount = async () => {
     try {
-      const response = await axios({
+      const response = await axiosPrivate({
         method: 'post',
-        url: `${axiosURL}/loginUser`,
+        url: `/loginUser`,
         data: { email, password },
       })
 
+      console.log(response);
+      const accessToken = response.data.accessToken
+      setAuth({ accessToken: accessToken, isAuth: true, email: email })
+      dispatch(hideLoginModal())
       setErrorMessage("User logged")
+
       console.log(response.data);
     } catch (err) {
-      if (err.response.status === 401) {
-        setErrorMessage("No such user")
-      } else if (err.response.status === 400) {
-        setErrorMessage("All input fields are required")
-      } else {
-        setErrorMessage("Error")
-      }
+      console.log(err.message);
+      // if (err.response.status === 401) {
+      //   setErrorMessage(err.response.data.message)
+      // } else if (err.response.status === 400) {
+      //   setErrorMessage(err.response.data.message)
+      // } else {
+      //   // handling status===500 
+      //   setErrorMessage("Error")
+      // }
     }
   }
 
@@ -124,7 +135,7 @@ const LoginModal = () => {
   return (
     <S.RegisterModalContainer ref={RegisterModalContainerRef}>
       <S.VSIcon src={VSIcon} ref={VSIconRef} />
-      <S.Text>Log in to your account</S.Text>
+      <S.Text>  Sign in to your account</S.Text>
       <S.Input
         ref={EmailInputRef}
         onChange={(e) => {
@@ -144,7 +155,7 @@ const LoginModal = () => {
         }}
         ref={FirstButtonRef}
       >
-        Log in
+        Sign in
       </S.Button>
       <S.ErrorField ref={ErrorMessageRef}>
         {errorMessage}

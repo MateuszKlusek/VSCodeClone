@@ -4,18 +4,24 @@ import File from "../../models/File.js"
 
 export const getUserData = async (req, res) => {
     // get both from user and files (based on userID from user)
+    const { email } = req.body
+    console.log("getUserData", email)
     try {
-        const user_data_response = await User.findOne({ username: "mateuszklusek" })
-        const filesId = user_data_response.filesId
+        const userFound = await User.findOne({ email: email })
+
+        // there's not user
+        if (!userFound) return res.status(400)
+        console.log("found users with data ")
+
+        const filesId = userFound.filesId
         const filesId_response = await File.find({ fileId: { $in: filesId } })
-        res.send({
+        return res.status(200).send({
             status: "success", data: {
-                filesData: filesId_response, folderStructure: user_data_response.folderStructure
+                filesData: filesId_response, folderStructure: userFound.folderStructure
             }
         })
-    }
-    catch (err) {
-        res.send({ status: "failure" })
+    } catch (err) {
         console.log(err)
+        return res.status(500).send({ message: err.message })
     }
 }

@@ -4,7 +4,7 @@ import React, { FC, useState, useEffect, useLayoutEffect, memo } from 'react'
 import * as S from './CodeEditor.styled'
 
 // hooks
-import { useWindowSize } from '../../../../hooks/useWindowSize.js'
+import { useWindowSize } from '../../../../hooks/useWindowSize'
 import { useSelector, useDispatch } from 'react-redux'
 
 // components

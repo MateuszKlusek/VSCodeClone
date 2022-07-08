@@ -95,7 +95,7 @@ const SignInModal = () => {
   return (
     <S.SignInModalContainer ref={SignInModalContainerRef}>
       <S.VSIcon src={VSIcon} ref={VSIconRef} />
-      <S.Text> Log in to existing account or create one</S.Text>
+      <S.Text> Sign in to existing account or create one</S.Text>
       <S.ButtonContainer>
         <S.Button
           ref={FirstButtonRef}
@@ -103,7 +103,7 @@ const SignInModal = () => {
             animateUnmounting('login')
           }}
         >
-          Log in
+          Sign in
         </S.Button>
         <S.Button
           ref={SecondButtonRef}

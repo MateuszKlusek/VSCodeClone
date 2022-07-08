@@ -15,6 +15,7 @@ import { filterFileIcon } from '../../../../../helpers/icons.js'
 // hooks
 import { useDispatch, useSelector } from 'react-redux'
 import { useDetectClickOutside } from 'react-detect-click-outside'
+import useAuth from '../../../../../hooks/useAuth'
 
 // helpers
 import { saveOpenFilesToStorage } from '../../../../../helpers/storage.js'
@@ -31,7 +32,8 @@ import { enableAddingFileOrFolderFromWorkspace } from '../../../../../actions/ot
 const Workspace = () => {
   const dispatch = useDispatch()
   // context states
-  const auth = useSelector<any, any>(state => state.auth)
+  //@ts-ignore
+  const { auth, setAuth } = useAuth();
 
   const openFiles = useSelector<any, any>(state => state.openFiles)
   const folderStructure = useSelector<any, any>(state => state.folderStructure)
@@ -59,7 +61,7 @@ const Workspace = () => {
         InputFileOrFolderRef.current.focus()
       }
     }
-  }, [folderStructure])
+  }, [folderStructure, auth.isAuth])
 
   // handle clicking outside the input field (when creating new file or folder), parsing data, saving it to server and so on\
   const InputFileOrFolderRef = useDetectClickOutside({
@@ -198,7 +200,7 @@ const Workspace = () => {
       }
       setHandleNewFileOrFolder((prev: boolean) => false)
     }
-  }, [InputFileOrFolderRef.current, handleNewFileOrFolder])
+  }, [InputFileOrFolderRef.current, handleNewFileOrFolder, auth.isAuth])
 
 
   // functions
@@ -332,12 +334,11 @@ const Workspace = () => {
           Click here to create a new project
         </S.NoFilesInformation>}
 
-        {folderStructure.length === 0 && !auth.isAuth && <S.NoFilesInformation>
-          Login or register to create project
+        {!auth.isAuth && <S.NoFilesInformation>
+          Login / register to create project
         </S.NoFilesInformation>}
 
-        {folderStructure && folderStructure.map((el: ISingleFileInFolderView, idx: any) =>
-
+        {auth.isAuth && folderStructure && folderStructure.map((el: ISingleFileInFolderView, idx: any) =>
           el.fieldType === "input" ?
             <S.S
               paddingLeft={el.depth}

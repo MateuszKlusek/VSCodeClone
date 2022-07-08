@@ -110,15 +110,21 @@ const RegisterModal = () => {
           password
         },
       })
-
+      // change it into a message bottom right
       setErrorMessage("Account created")
-      console.log(response.data);
+      if (response.status === 201) {
+        console.log(response.data.success);
+      }
+      dispatch(hideRegisterModal())
     } catch (err) {
       if (err.response.status === 409) {
-        setErrorMessage("Email is taken")
+        console.log(err.response.data.message);
+        setErrorMessage(err.response.data.message)
       } else if (err.response.status === 400) {
-        setErrorMessage("All input fields are required")
+        setErrorMessage(err.response.data.message)
       } else {
+        // handling status === 500
+        // since we don't know that the message is, we set "Error"
         setErrorMessage("Error")
       }
     }

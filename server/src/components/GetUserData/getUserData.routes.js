@@ -5,6 +5,6 @@ const router = express.Router()
 import { getUserData } from "./getUserData.controller.js"
 
 
-router.get("/getUserData", getUserData)
+router.post("/getUserData", getUserData)
 
 export default router;

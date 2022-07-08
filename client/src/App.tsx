@@ -1,23 +1,21 @@
 // react
-import React, { useEffect, useLayoutEffect, } from 'react'
+import React, { useEffect, useLayoutEffect, useState, } from 'react'
 
 // packages
 import _ from 'lodash'
-import axios from 'axios'
+import axios, { axiosPrivate } from './api/axios'
 
 // getting settings
 import Settings from './helpers/settings.json'
 
-
 // helpers
-import { axiosURL } from './config/axios.js'
 import { tokenizer } from './helpers/tokenizer'
 import { changeTabs, createNewFile } from './helpers/misc'
 import { saveOpenFilesToStorage, saveSidePanelMovedPxtoStorage } from './helpers/storage.js'
 
 // hooks
 import { useDispatch, useSelector } from 'react-redux'
-import { useWindowSize } from './hooks/useWindowSize.js'
+import { useWindowSize } from './hooks/useWindowSize'
 
 // components
 import AppContainer from './components/AppContainer/AppContainer'
@@ -30,11 +28,18 @@ import { setFilesData, setLeftMenuActiveItem } from './actions/filesDataModals'
 import { closeCommandPalette, hideRightClickMouseMenu, openCommandPalette, setRightClickMouseMenuCoords, showRightClickMouseMenu, togglePanel } from "./actions/UIModals"
 import { sortFolderStructure } from './utils/Misc/misc'
 import { setGlobalSearchPhrase } from './actions/otherModals'
-
+import useRefreshToken from './hooks/useRefreshToken'
+import useAuth from './hooks/useAuth'
+import useAxiosPrivate from "./hooks/useAxiosPrivate"
 
 function App() {
   const windowSize = useWindowSize()
   const dispatch = useDispatch()
+
+  const refresh = useRefreshToken()
+  // @ts-ignore
+  const { auth } = useAuth()
+  const axiosPrivate = useAxiosPrivate();
 
   const loginModal = useSelector<any>(state => state.loginModal)
   const registerModal = useSelector<any>(state => state.registerModal)
@@ -68,19 +73,44 @@ function App() {
       dispatch((setLeftMenuActiveItem(window.localStorage.getItem('activityBarItem')!)))
   }, [])
 
-  useLayoutEffect(() => {
+
+  useEffect(() => {
+    const verifyRefreshToken = async () => {
+      try {
+        await refresh()
+      } catch (err) {
+        console.log(err)
+      }
+    }
+
+    !auth.accessToken && verifyRefreshToken()
+  }, [])
+
+
+
+  useEffect(() => {
     // getting all the data from mongodb
     // only when loading website / refreshing
     dispatch(setSettings(Settings))
 
+
+    // clean localstorage when not singed-in
+    if (!auth.isAuth) localStorage.clear();
+
     let isMounted = true
     const controller = new AbortController();
 
+
     const getUserData = async () => {
+      console.log("getuserData client");
+      console.log('auth', auth.email);
       try {
-        const response = await axios({
-          method: 'get',
-          url: `${axiosURL}/getUserData`,
+        const response = await axiosPrivate({
+          method: 'post',
+          url: `/getUserData`,
+          data: {
+            email: auth.email,
+          },
           signal: controller.signal
         })
 
@@ -90,6 +120,7 @@ function App() {
           dispatch(setDataLoaded(true))
         }
         else {
+          console.log(response.data);
           // parsing and transforming data from server
           var template = { mode: 'normal', command: '', x: 95, y: 65 }
           var res: IFilesData = {}
@@ -144,20 +175,20 @@ function App() {
 
 
       } catch (err: any) {
-        console.log(err);
+        console.log(err.message);
         if (err.request.response === 'A token is required for authentication.') {
           dispatch(setDataLoaded(true))
         }
       }
     }
-    // getUserData()
+    auth.isAuth && getUserData()
 
     dispatch(setDataLoaded(true))
     return () => {
       isMounted = false
       controller.abort()
     }
-  }, [])
+  }, [auth])
 
 
   useEffect(() => {
