@@ -282,6 +282,8 @@ const CodeEditor: FC<CodeEditorProps> = ({ editorId }) => {
                 })
                 // handling saving new file
                 if (misc === "newFile") {
+                  const { updatedFilesDataState } = await updateFilesDataState(filesData, fileId, { x: newX, y: newY, tokenizedText: newText, mode: "normal", command: "" })
+                  dispatch(setFilesData(updatedFilesDataState))
                   dispatch(showSaveFileToFolderModal())
                 } else if (misc === "saveFileContent") {
                   try {
@@ -302,6 +304,8 @@ const CodeEditor: FC<CodeEditorProps> = ({ editorId }) => {
                       _alertData = _.cloneDeep(_alertData)
                       dispatch(setAlertData(_alertData))
                     }
+                    const { updatedFilesDataState } = await updateFilesDataState(filesData, fileId, { x: newX, y: newY, tokenizedText: newText, mode: "normal", command: "" })
+                    dispatch(setFilesData(updatedFilesDataState))
                     setCommand((prev) => '')
                     setMode('normal')
                   } catch (err) {
@@ -419,8 +423,6 @@ const CodeEditor: FC<CodeEditorProps> = ({ editorId }) => {
               file_path={currentFileId && filesData[currentFileId].filePath}
               meta={filesMetaData}
             />
-            {/* <ScrollBarInfo height={`${windowSize.height - 93}px`} /> */}
-
             <S.TextField
               height={
                 panelOpened ? `${windowSize.height - 93 - 200}px` : `${windowSize.height - 93}px`
@@ -440,10 +442,7 @@ const CodeEditor: FC<CodeEditorProps> = ({ editorId }) => {
                       <S.Span
                         key={idx2}
                         // @ts-ignore
-                        color={fileExtension === "js" ? (el2.type in classes ? classes[el2.type] : '') : "white"}
-                        onClick={() => {
-                          // console.log(normalizeString(el2))
-                        }}
+                        colorz={fileExtension === "js" ? (el2.type in classes ? classes[el2.type] : '') : "white"}
                       >
                         {normalizeString(el2)}
                       </S.Span>

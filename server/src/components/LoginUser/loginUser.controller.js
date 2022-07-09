@@ -8,7 +8,7 @@ dotenv.config();
 
 // token generators
 const generateAccessToken = (email) => {
-    return jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15s" })
+    return jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "5m" })
 }
 
 const generateRefreshToken = (email) => {
@@ -18,7 +18,6 @@ const generateRefreshToken = (email) => {
 
 export const loginUser = async (req, res) => {
     const { email, password } = req.body
-    console.log('loginUser', email, password)
 
     // validate user input, all input fields required (double check)
     if (!(email && password)) {

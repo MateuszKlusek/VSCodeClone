@@ -1,6 +1,9 @@
 import express, { application } from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
+import morgan from "morgan"
+import fs from "fs"
+import path from "path"
 
 const app = express()
 
@@ -13,12 +16,19 @@ import { mongoose } from "./config/mongoDB.js"
 // variables
 const PORT = process.env.PORT || 5001;
 
+
+// create a write stream (in append mode)
+const serverPath = process.cwd()
+var accessLogStream = fs.createWriteStream(`${serverPath}/src/logs/access.log`, { flags: 'a' })
+
+
 // middlewares
 app.use(cors({
     credentials: true,
     origin: "http://localhost:3000"
 }))
 app.use(express.json())
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms', { stream: accessLogStream }))
 app.use(cookieParser())
 
 // routes

@@ -22,7 +22,7 @@ export const refresh = async (req, res) => {
             const accessToken = jwt.sign(
                 { "email": decoded.email },
                 process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: '30s' }
+                { expiresIn: '5m' }
             );
             res.status(200).send({ email: foundUser.email, accessToken: accessToken, })
         }

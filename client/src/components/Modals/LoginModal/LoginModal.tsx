@@ -116,15 +116,14 @@ const LoginModal = () => {
 
       console.log(response.data);
     } catch (err) {
-      console.log(err.message);
-      // if (err.response.status === 401) {
-      //   setErrorMessage(err.response.data.message)
-      // } else if (err.response.status === 400) {
-      //   setErrorMessage(err.response.data.message)
-      // } else {
-      //   // handling status===500 
-      //   setErrorMessage("Error")
-      // }
+      if (err.response.status === 401) {
+        setErrorMessage(err.response.data.message)
+      } else if (err.response.status === 400) {
+        setErrorMessage(err.response.data.message)
+      } else {
+        // handling status===500 
+        setErrorMessage("Error")
+      }
     }
   }
 

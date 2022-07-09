@@ -11,6 +11,9 @@ import useAuth from '../../../../hooks/useAuth'
 import { hideAccountPopupMenu } from '../../../../actions/UIModals'
 import { showSigninModal } from '../../../../actions/popupsModals'
 import useAxiosPrivate from '../../../../hooks/useAxiosPrivate'
+import { setFolderStructure, setOpenFiles } from '../../../../actions'
+import { setGlobalSearchPhrase } from '../../../../actions/otherModals'
+import { setFilesData } from '../../../../actions/filesDataModals'
 
 const AccountsPopUp: FC<AccountsPopUpProps> = ({ bottom, left }) => {
 
@@ -47,8 +50,20 @@ const AccountsPopUp: FC<AccountsPopUpProps> = ({ bottom, left }) => {
       console.log(err);
     }
     finally {
+      // clean localStorage
       window.localStorage.clear()
+      // clean authorization data
       setAuth({ isAuth: false, accessToken: "", email: "" });
+      // clean other states
+      dispatch(setOpenFiles({ editors: [], metadata: {} }))
+      dispatch(setGlobalSearchPhrase(''))
+      dispatch(setFolderStructure([]))
+      dispatch(setFilesData({}))
+
+
+
+
+      // hide menu
       dispatch(hideAccountPopupMenu())
     }
   }

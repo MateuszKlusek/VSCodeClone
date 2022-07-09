@@ -72,7 +72,7 @@ const Panel: FC = () => {
         <S.Tab active={true}>Terminal</S.Tab>
       </S.TopMenu>
       <S.TextField>
-        <S.TerminalPlaceholder>{auth.email}@remote %</S.TerminalPlaceholder>
+        <S.TerminalPlaceholder>{auth.email}-remote %</S.TerminalPlaceholder>
         {parsedTerminalMessage.map((el: any, idx: any) => (
           <S.TextLine key={idx}>{el}</S.TextLine>
         ))}

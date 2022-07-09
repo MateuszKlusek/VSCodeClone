@@ -5,17 +5,10 @@ import dotenv from "dotenv"
 import bcrypt from "bcryptjs"
 dotenv.config();
 
-const generateAccessToken = (email) => {
-    return jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15s" })
-}
-const generateRefreshToken = (email) => {
-    return jwt.sign({ email: email }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "1d" })
-}
 
 export const registerUser = async (req, res) => {
     try {
         const { email, password } = req.body
-        console.log('registerUser', email, password)
 
         // validate user input, all input fields required (double check)
         if (!(email && password)) {

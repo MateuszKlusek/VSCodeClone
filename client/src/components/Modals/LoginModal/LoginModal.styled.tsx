@@ -4,7 +4,7 @@ export const RegisterModalContainer = styled.div`
   /* user-select: none; */
   position: absolute;
   width: 260px;
-  height: 275px;
+  height: 255px;
   border-radius: 10px;
   border: 1px solid rgb(81, 80, 86);
   box-shadow: 0px 0px 1px 1px #01010178;

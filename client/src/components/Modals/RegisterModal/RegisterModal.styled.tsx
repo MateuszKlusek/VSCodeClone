@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 export const RegisterModalContainer = styled.div`
-  user-select: none;
+  /* user-select: none; */
   position: absolute;
   width: 260px;
   height: 255px;
@@ -43,7 +43,7 @@ export const Text = styled.div`
 
 export const Input = styled.input`
   outline: none;
-  width: 200px;
+  width: 180px;
   height: 25px;
   background: #2e303d;
   margin-bottom: 5px;
@@ -55,9 +55,7 @@ export const Input = styled.input`
   border-style: solid;
   border: 1px solid rgba(0, 119, 217, 0.495);
 `
-
 export const Button = styled.div`
-cursor: pointer;
   width: 104px;
   height: 27px;
   background: rgb(0, 119, 217);
