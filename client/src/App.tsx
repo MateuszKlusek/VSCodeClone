@@ -1,5 +1,5 @@
 // react
-import React, { useEffect, useLayoutEffect, useState, } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState, } from 'react'
 
 // packages
 import _ from 'lodash'
@@ -10,7 +10,7 @@ import Settings from './helpers/settings.json'
 
 // helpers
 import { tokenizer } from './helpers/tokenizer'
-import { changeTabs, createNewFile } from './helpers/misc'
+import { changeTabs, createNewFile, generateUUIDWithoutDashed } from './helpers/misc'
 import { saveOpenFilesToStorage, saveSidePanelMovedPxtoStorage } from './helpers/storage.js'
 
 // hooks
@@ -27,7 +27,7 @@ import { setDataLoaded, setFolderStructure, setMovablePanelClicked, setOpenFiles
 import { setFilesData, setLeftMenuActiveItem } from './actions/filesDataModals'
 import { closeCommandPalette, hideRightClickMouseMenu, openCommandPalette, setRightClickMouseMenuCoords, showRightClickMouseMenu, togglePanel } from "./actions/UIModals"
 import { sortFolderStructure } from './utils/Misc/misc'
-import { setGlobalSearchPhrase } from './actions/otherModals'
+import { setAlertData, setGlobalSearchPhrase } from './actions/otherModals'
 import useRefreshToken from './hooks/useRefreshToken'
 import useAuth from './hooks/useAuth'
 import useAxiosPrivate from "./hooks/useAxiosPrivate"
@@ -57,6 +57,8 @@ function App() {
   const openFiles = useSelector<any, any>(state => state.openFiles)
   const filesData = useSelector<any, any>(state => state.filesData)
 
+  const alertData = useSelector<any>(state => state.alertData)
+
   const sidePanelMovedPx = useSelector<any, any>(state => state.sidePanelMovedPx)
 
   /// cleaning storage with reload
@@ -77,6 +79,7 @@ function App() {
     !auth.accessToken && verifyRefreshToken()
   }, [])
 
+  var isMountedGetData = useRef<any>(false)
   useEffect(() => {
     // getting all the data from mongodb
     // only when loading website / refreshing
@@ -151,8 +154,10 @@ function App() {
 
           dispatch(setFolderStructure(sortedFolderStructure))
           dispatch(setFilesData(res))
+          console.log("end of try");
         }
       } catch (err: any) {
+        console.log("error");
         console.log(err.message);
         if (err.request.response === 'A token is required for authentication.') {
         }
@@ -176,8 +181,9 @@ function App() {
     }
 
     auth.isAuth && getUserData()
-    !auth.accessToken && dispatch(setDataLoaded(true))
+    isMountedGetData.current && dispatch(setDataLoaded(true))
 
+    isMountedGetData.current = true
     return () => {
       isMounted = false
       controller.abort()
@@ -226,10 +232,18 @@ function App() {
             // can't do it with ctrl + n, because since chrome v 4.x this cannot be overritten
             if (e.metaKey) {
               e.preventDefault()
-              const { _openFiles, _filesData } = createNewFile(openFiles, focusedEditor, filesData)
-              saveOpenFilesToStorage(_openFiles)
-              dispatch(setOpenFiles(_openFiles))
-              dispatch(setFilesData(_filesData))
+              if (auth.isAuth) {
+                const { _openFiles, _filesData } = createNewFile(openFiles, focusedEditor, filesData)
+                saveOpenFilesToStorage(_openFiles)
+                dispatch(setOpenFiles(_openFiles))
+                dispatch(setFilesData(_filesData))
+              } else {
+                var _alertData: any = alertData
+                var newId = generateUUIDWithoutDashed()
+                _alertData[newId] = { msg: "Log in to access functionality", id: newId }
+                _alertData = _.cloneDeep(_alertData)
+                dispatch(setAlertData(_alertData))
+              }
             }
             break
           case 'p':
@@ -286,7 +300,6 @@ function App() {
     }
     window.addEventListener('keydown', globalKeyPress)
 
-
     return () => {
       window.removeEventListener('keydown', globalKeyPress)
     }
@@ -304,6 +317,8 @@ function App() {
       window.removeEventListener('mouseup', handleMouseUp)
     }
   })
+
+
 
   // handling appearing the right click panel and pushing data to the component 
   // closing menu is handled inside MouseClickMenu component
@@ -329,7 +344,6 @@ function App() {
     return () => {
       window.removeEventListener("contextmenu", preventDefault)
     }
-
   }, [rightClickMouseMenuOpened, rightClickMouseMenuCoords, folderStructure, openFiles, filesData])
 
 

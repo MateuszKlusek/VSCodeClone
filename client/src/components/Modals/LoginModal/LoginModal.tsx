@@ -20,6 +20,9 @@ import VSIcon from './../../../assets/others/visual-studio-code.png'
 
 // actions
 import { hideLoginModal, hideRegisterModal, showAlert } from '../../../actions/popupsModals'
+import { setAlertData } from '../../../actions/otherModals'
+import { generateUUIDWithoutDashed } from '../../../helpers/misc'
+import _ from 'lodash'
 
 const LoginModal = () => {
 
@@ -30,6 +33,7 @@ const LoginModal = () => {
 
   const loginModal = useSelector<any, boolean>(state => state.loginModal)
   const registerModal = useSelector<any, boolean>(state => state.registerModal)
+  const alertData = useSelector<any, any>(state => state.alertData)
 
   const [errorMessage, setErrorMessage] = useState<string>("")
 
@@ -112,9 +116,14 @@ const LoginModal = () => {
       const accessToken = response.data.accessToken
       setAuth({ accessToken: accessToken, isAuth: true, email: email })
       dispatch(hideLoginModal())
-      setErrorMessage("User logged")
 
-      console.log(response.data);
+      // alert
+      var _alertData: any = alertData
+      var newId = generateUUIDWithoutDashed()
+      _alertData[newId] = { msg: "You are logged in", id: newId }
+      _alertData = _.cloneDeep(_alertData)
+      dispatch(setAlertData(_alertData))
+
     } catch (err) {
       if (err.response.status === 401) {
         setErrorMessage(err.response.data.message)

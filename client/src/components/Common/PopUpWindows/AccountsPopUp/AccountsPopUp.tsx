@@ -12,8 +12,10 @@ import { hideAccountPopupMenu } from '../../../../actions/UIModals'
 import { showSigninModal } from '../../../../actions/popupsModals'
 import useAxiosPrivate from '../../../../hooks/useAxiosPrivate'
 import { setFolderStructure, setOpenFiles } from '../../../../actions'
-import { setGlobalSearchPhrase } from '../../../../actions/otherModals'
+import { setAlertData, setGlobalSearchPhrase } from '../../../../actions/otherModals'
 import { setFilesData } from '../../../../actions/filesDataModals'
+import { generateUUIDWithoutDashed } from '../../../../helpers/misc'
+import _ from 'lodash'
 
 const AccountsPopUp: FC<AccountsPopUpProps> = ({ bottom, left }) => {
 
@@ -23,6 +25,7 @@ const AccountsPopUp: FC<AccountsPopUpProps> = ({ bottom, left }) => {
 
   const axiosPrivate = useAxiosPrivate();
   const logged = useSelector<any, boolean>(state => state.logged)
+  const alertData = useSelector<any, any>(state => state.alertData)
 
   const [accountSubmenuShow, setAccountSubmenuShow] = useState(false)
 
@@ -60,11 +63,15 @@ const AccountsPopUp: FC<AccountsPopUpProps> = ({ bottom, left }) => {
       dispatch(setFolderStructure([]))
       dispatch(setFilesData({}))
 
-
-
-
       // hide menu
       dispatch(hideAccountPopupMenu())
+
+      // alert
+      var _alertData: any = alertData
+      var newId = generateUUIDWithoutDashed()
+      _alertData[newId] = { msg: "You are logged out", id: newId }
+      _alertData = _.cloneDeep(_alertData)
+      dispatch(setAlertData(_alertData))
     }
   }
 

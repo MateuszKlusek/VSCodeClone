@@ -28,7 +28,7 @@ app.use(cors({
     origin: "http://localhost:3000"
 }))
 app.use(express.json())
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms', { stream: accessLogStream }))
+app.use(morgan('combined', { stream: accessLogStream }))
 app.use(cookieParser())
 
 // routes

@@ -479,17 +479,30 @@ const CodeEditor: FC<CodeEditorProps> = ({ editorId }) => {
                 Visual Studio Code Clone
               </S.Title>
 
+
               <S.Subtitle>
                 Editing evolved
               </S.Subtitle>
 
+              <S.SubSubtitle>
+                {auth.isAuth ? `You are logged in as: ${auth.email}` : "You are no logged in"}
+              </S.SubSubtitle>
+
               <S.StartingMenu>
                 <S.StartingKMenuTitle> Start</S.StartingKMenuTitle>
                 <S.Option onClick={() => {
-                  const { _openFiles, _filesData } = createNewFile(openFiles, editorId, filesData)
-                  saveOpenFilesToStorage(_openFiles)
-                  dispatch(setOpenFiles(_openFiles))
-                  dispatch(setFilesData(_filesData))
+                  if (auth.isAuth) {
+                    const { _openFiles, _filesData } = createNewFile(openFiles, editorId, filesData)
+                    saveOpenFilesToStorage(_openFiles)
+                    dispatch(setOpenFiles(_openFiles))
+                    dispatch(setFilesData(_filesData))
+                  } else {
+                    var _alertData: any = alertData
+                    var newId = generateUUIDWithoutDashed()
+                    _alertData[newId] = { msg: "Log in to access functionality", id: newId }
+                    _alertData = _.cloneDeep(_alertData)
+                    dispatch(setAlertData(_alertData))
+                  }
                 }}>
                   <S.Icon src={newfile} />
                   <S.OptionText

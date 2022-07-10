@@ -19,11 +19,15 @@ import VSIcon from './../../../assets/others/visual-studio-code.png'
 
 // actions
 import { hideRegisterModal, showAlert } from '../../../actions/popupsModals'
+import { generateUUIDWithoutDashed } from '../../../helpers/misc'
+import _ from 'lodash'
+import { setAlertData } from '../../../actions/otherModals'
 
 const RegisterModal = () => {
 
   const loginModal = useSelector<any, boolean>(state => state.loginModal)
   const registerModal = useSelector<any, boolean>(state => state.registerModal)
+  const alertData = useSelector<any, any>(state => state.alertData)
 
   const [errorMessage, setErrorMessage] = useState<string>("")
 
@@ -111,9 +115,12 @@ const RegisterModal = () => {
         },
       })
       // change it into a message bottom right
-      setErrorMessage("Account created")
       if (response.status === 201) {
-        console.log(response.data.success);
+        var _alertData: any = alertData
+        var newId = generateUUIDWithoutDashed()
+        _alertData[newId] = { msg: "Account registered", id: newId }
+        _alertData = _.cloneDeep(_alertData)
+        dispatch(setAlertData(_alertData))
       }
       dispatch(hideRegisterModal())
     } catch (err) {

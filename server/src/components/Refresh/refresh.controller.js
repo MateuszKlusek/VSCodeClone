@@ -8,7 +8,7 @@ dotenv.config();
 
 export const refresh = async (req, res) => {
     const cookies = req.cookies;
-    if (!cookies?.jwt) return res.status(401);
+    if (!cookies?.jwt) return res.status(200).send({ email: "", accessToken: "", isAuth: false });
     const refreshToken = cookies.jwt;
 
     const foundUser = await User.findOne({ refreshToken });
@@ -24,7 +24,7 @@ export const refresh = async (req, res) => {
                 process.env.ACCESS_TOKEN_SECRET,
                 { expiresIn: '5m' }
             );
-            res.status(200).send({ email: foundUser.email, accessToken: accessToken, })
+            res.status(200).send({ email: foundUser.email, accessToken: accessToken, isAuth: true })
         }
     );
 }

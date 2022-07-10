@@ -101,6 +101,13 @@ font-weight: 500;
 margin-top: 7px;
 `
 
+export const SubSubtitle = styled.div`
+margin-top: 20px;
+  color: #a69e9e;
+font-size: 22;
+font-weight: 500;
+`
+
 export const StartingMenu = styled.div`
 margin-top: 40px;
  font-size: 19px;
