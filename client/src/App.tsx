@@ -154,7 +154,6 @@ function App() {
 
           dispatch(setFolderStructure(sortedFolderStructure))
           dispatch(setFilesData(res))
-          console.log("end of try");
         }
       } catch (err: any) {
         console.log("error");
@@ -180,8 +179,14 @@ function App() {
       }
     }
 
-    auth.isAuth && getUserData()
-    isMountedGetData.current && dispatch(setDataLoaded(true))
+    if (auth.isAuth) {
+      (async () => {
+        await getUserData()
+        isMountedGetData.current && dispatch(setDataLoaded(true))
+      })()
+    } else {
+      isMountedGetData.current && dispatch(setDataLoaded(true))
+    }
 
     isMountedGetData.current = true
     return () => {

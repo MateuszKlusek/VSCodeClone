@@ -1,14 +1,15 @@
-
-
-import { execFile, spawn } from "child_process"
+// packages
+import { execFile } from "child_process"
 import process from "process"
 import tmp from "tmp"
-
 import fs from "fs"
 
 export const runCode = async (req, res) => {
     console.log("")
     console.log("====! EXECUTING CODE !====")
+    console.log(`author: ${req.body.email}`)
+    console.log(`code: ${req.body.codeToRun}`)
+
     try {
         const codeToRun = req.body.codeToRun
         var tmpObj = tmp.fileSync({
@@ -24,9 +25,6 @@ export const runCode = async (req, res) => {
                 try {
                     if (err) throw "Something went wrong with file creationg";
                     else {
-                        // if no error
-                        console.log("Data is appended to file successfully.")
-
                         var result = ''
                         try {
                             execFile("node", [`${serverPath}/temp/${tempFileName}`], { timeout: 3000, }, (err, stdout, stderr) => {

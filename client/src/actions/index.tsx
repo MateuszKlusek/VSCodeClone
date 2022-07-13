@@ -19,16 +19,12 @@ export const setMovablePanelClicked = (data: any) => {
     }
 }
 
-
-
 export const setFolderStructure = (data: any) => {
     return {
         type: "SET_FOLDER_STRUCTURE",
         payload: data
     }
 }
-
-
 
 // MISC
 export const setDataLoaded = (data: any) => {
@@ -38,10 +34,6 @@ export const setDataLoaded = (data: any) => {
     }
 }
 
-
-
-
-
 // SETTINGS
 export const setSettings = (data: any) => {
     return {
@@ -49,8 +41,6 @@ export const setSettings = (data: any) => {
         payload: data
     }
 }
-
-
 
 // ALERT POPUPS
 export const showAlert = (data: any) => {

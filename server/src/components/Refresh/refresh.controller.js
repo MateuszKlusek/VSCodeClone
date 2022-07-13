@@ -1,10 +1,12 @@
+// models
 import User from "../../models/User.js"
 
+// packages
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
+
+// import .env variables
 dotenv.config();
-
-
 
 export const refresh = async (req, res) => {
     const cookies = req.cookies;

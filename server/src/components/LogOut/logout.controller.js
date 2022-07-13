@@ -1,7 +1,10 @@
+// models
 import User from "../../models/User.js"
 
-import jwt from "jsonwebtoken"
+// packages
 import dotenv from "dotenv"
+
+// import .env variables
 dotenv.config();
 
 

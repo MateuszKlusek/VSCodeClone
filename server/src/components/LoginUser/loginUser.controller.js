@@ -1,10 +1,13 @@
+// models
 import User from "../../models/User.js"
 
+// packages
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
 import bcrypt from "bcryptjs"
-dotenv.config();
 
+// import .env variables
+dotenv.config();
 
 // token generators
 const generateAccessToken = (email) => {
@@ -14,7 +17,6 @@ const generateAccessToken = (email) => {
 const generateRefreshToken = (email) => {
     return jwt.sign({ email: email }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "1d" })
 }
-
 
 export const loginUser = async (req, res) => {
     const { email, password } = req.body

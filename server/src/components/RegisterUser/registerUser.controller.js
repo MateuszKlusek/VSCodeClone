@@ -1,8 +1,11 @@
+// models
 import User from "../../models/User.js"
 
-import jwt from "jsonwebtoken"
+// packaes
 import dotenv from "dotenv"
 import bcrypt from "bcryptjs"
+
+// import .env variables
 dotenv.config();
 
 

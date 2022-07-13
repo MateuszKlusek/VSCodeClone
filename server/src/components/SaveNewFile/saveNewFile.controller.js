@@ -1,7 +1,6 @@
+// models
 import User from "../../models/User.js"
 import File from "../../models/File.js"
-import _ from "lodash"
-
 
 export const saveNewFile = async (req, res) => {
     try {

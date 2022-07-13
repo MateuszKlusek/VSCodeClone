@@ -18,16 +18,11 @@ export const enableAddingFileOrFolderFromWorkspace = () => {
     }
 }
 
-
 export const disableAddingFileOrFolderFromWorkspace = () => {
     return {
         type: "NOT_ADDING_FILE_OR_FOLDER_FROM_WORKSPACE",
     }
 }
-
-
-
-
 
 export const enableSearching = () => {
     return {
@@ -35,13 +30,11 @@ export const enableSearching = () => {
     }
 }
 
-
 export const disableSearching = () => {
     return {
         type: "DISABLE_SEARCHING",
     }
 }
-
 
 export const setGlobalSearchPhrase = (data: any) => {
     return {
